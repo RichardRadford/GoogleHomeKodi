@@ -3,6 +3,8 @@
 const youtubeSearch = require('youtube-search');
 const Fuse = require('fuse.js');
 const KodiWindows = require('./kodi-connection/windows.js')();
+const net = require('net');
+
 
 const AUDIO_PLAYER = 0;
 const VIDEO_PLAYER = 1;
@@ -1060,6 +1062,34 @@ exports.kodiPlayMusicByGenre = (request) => {
         .then((genre) => playMusicGenre(request, genre));
 
 };
+
+exports.tivoSendCommand = (request) => {
+
+    let requestedCommand = request.query.q;
+
+    console.log('TIVO ip address:', process.env.TIVO_IP);
+    console.log('TIVO port:', process.env.TIVO_PORT);
+    console.log('TIVO sending command requested:', requestedCommand);
+
+    var client = new net.Socket();
+    client.connect(process.env.TIVO_PORT, process.env.TIVO_IP, function () {
+        console.log('Connected');
+        client.write(requestedCommand);
+        client.end();
+    });
+
+    //client.on('data', function (data) {
+    //    console.log('Received: ' + data);
+    //    client.destroy(); // kill client after server's response
+    //});
+
+    client.on('close', function () {
+        console.log('Connection closed');
+    });
+    console.log('TIVO command send done')
+    return Promise.resolve('TIVO command sent');
+};
+
 
 const kodiGetAddons = (kodi) => {
     return kodi.Addons.GetAddons({ // eslint-disable-line new-cap

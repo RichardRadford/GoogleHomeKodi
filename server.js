@@ -254,6 +254,10 @@ app.all('/togglePartymode', exec(Helper.kodiTogglePartymode));
 // Playlist Control
 app.all('/playercontrol', exec(Helper.playercontrol));
 
+// TIVVO control
+// Request format:     http://[THIS_SERVER_IP_ADDRESS]/tivocommand?q=[TIVO_COMMAND]
+app.all('/tivocommand', exec(Helper.tivoSendCommand));
+
 app.get('/', (request, response) => {
     response.sendFile(`${__dirname}/views/index.html`);
 });
