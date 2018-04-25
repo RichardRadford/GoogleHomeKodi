@@ -1063,6 +1063,7 @@ exports.kodiPlayMusicByGenre = (request) => {
 
 };
 
+var client;
 exports.tivoSendCommand = (request) => {
 
     let requestedCommand = request.query.q;
@@ -1071,11 +1072,15 @@ exports.tivoSendCommand = (request) => {
     console.log('TIVO port:', process.env.TIVO_PORT);
     console.log('TIVO sending command requested:', requestedCommand);
 
-    var client = new net.Socket();
+    client = new net.Socket();
     client.connect(process.env.TIVO_PORT, process.env.TIVO_IP, function () {
         console.log('Connected');
         client.write(requestedCommand);
-        client.end();
+        setTimeout(function () {
+            console.log('Closing');
+            client.end();
+        }, 3000);
+        
     });
 
     //client.on('data', function (data) {
